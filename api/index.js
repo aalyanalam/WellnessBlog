@@ -1,3 +1,5 @@
+//Module Imports and Setup
+
 const express = require('express');
 const cors = require('cors');
 const mongoose = require("mongoose");
@@ -14,13 +16,20 @@ const fs = require('fs');
 const salt = bcrypt.genSaltSync(10);
 const secret = '90210';
 
+//Middleware Configuration
+//Configures middlewares for the Express app, including CORS, JSON parser,
+//cookie parser, and static file server
+
 app.use(cors({credentials: true,origin:'http://YOUR_LOCAL_HOST'}));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
+//Database Connection
 mongoose.connect("YOUR MONGODB CONNECTION STRING WITH PASSWORD");
 
+//POST endpoint for user registration: takes username and password,
+//hashes the password, creates new user in database, and returns user object
 app.post('/register', async(req, res) => {
     const {username, password} = req.body;
     try{
@@ -36,6 +45,8 @@ app.post('/register', async(req, res) => {
 
 });
 
+//POST endpoint for user login: checks username and password
+//if correct generates JWT, sends it as a cookie to client
 app.post('/login', async (req, res) => {
     const {username,password} = req.body;
     const userDoc = await User.findOne({username});
@@ -54,6 +65,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
+//Defines GET endpoint to fetch profile info using JWT from cookies
 app.get('/profile', (req,res) => {
     const {token} = req.cookies;
     jwt.verify(token, secret, {}, (err,info) => {
@@ -62,10 +74,14 @@ app.get('/profile', (req,res) => {
     });
 });
 
+//Provides POST endpoint for user logout 
+//clears authentication token cookie
 app.post('/logout', (req,res) => {
     res.cookie('token', '').json('ok');
 });
 
+//Sets up POST endpoint for creating posts with file uploads
+//Processes and renames the file, verifies user's token, creates new post in the database
 app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
     const {originalname, path} = req.file;
     const parts = originalname.split('.');
@@ -89,6 +105,8 @@ app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
     });
 });
 
+//Endpoints for fetching posts
+//First GET fetches list of posts, second GET fetches post by ID
 app.get('/post', async (req,res) => {
     res.json(await Post.find()
     .populate('author', ['username'])
@@ -102,5 +120,6 @@ app.get('/post/:id', async (req, res) => {
     res.json(postDoc);
 })
 
+//Starts the server on port 4000, listening for incoming requests
 app.listen(4000);
 
