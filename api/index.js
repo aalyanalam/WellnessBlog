@@ -65,6 +65,10 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
 //Defines GET endpoint to fetch profile info using JWT from cookies
 app.get('/profile', (req,res) => {
     const {token} = req.cookies;
