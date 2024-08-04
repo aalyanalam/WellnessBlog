@@ -20,13 +20,13 @@ const secret = '90210';
 //Configures middlewares for the Express app, including CORS, JSON parser,
 //cookie parser, and static file server
 
-app.use(cors({credentials: true,origin:'http://YOUR_LOCAL_HOST'}));
+app.use(cors({credentials: true,origin:'http://localhost:3000'}));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 //Database Connection
-mongoose.connect("YOUR MONGODB CONNECTION STRING WITH PASSWORD");
+mongoose.connect('mongodb+srv://blog:z9RnZIyjoSf8TVRz@cluster0.81jzigh.mongodb.net/?retryWrites=true&w=majority');
 
 //POST endpoint for user registration: takes username and password,
 //hashes the password, creates new user in database, and returns user object
