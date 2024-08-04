@@ -1,3 +1,5 @@
+console.log("Starting the server..."); // Initial log to confirm script execution
+
 //Module Imports and Setup
 
 const express = require('express');
@@ -25,8 +27,24 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
+// Add this route handler for the root URL
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
+console.log("Connecting to MongoDB...");
+
 //Database Connection
-mongoose.connect('mongodb+srv://blog:z9RnZIyjoSf8TVRz@cluster0.81jzigh.mongodb.net/?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://blog:z9RnZIyjoSf8TVRz@cluster0.81jzigh.mongodb.net/wellnessblog?retryWrites=true&w=majority')
+  .then(() => {
+    console.log('MongoDB connected');
+    app.listen(4000, () => {
+      console.log('Server is running on port 4000');
+    });
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+  });
 
 //POST endpoint for user registration: takes username and password,
 //hashes the password, creates new user in database, and returns user object
@@ -63,10 +81,6 @@ app.post('/login', async (req, res) => {
     } else {
         res.status(400).json('wrong credentials');
     }
-});
-
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
 });
 
 //Defines GET endpoint to fetch profile info using JWT from cookies
