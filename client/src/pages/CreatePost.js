@@ -25,7 +25,7 @@ export default function CreatePost () {
         data.set('content', content);
         data.set('file', files[0]);
         ev.preventDefault();
-        const response = await fetch('http://localhost:4000/post', {
+        const response = await fetch('http://ec2-52-15-155-181.us-east-2.compute.amazonaws.com:4000/post', {
             method: 'POST',
             body: data,
             credentials: 'include',

@@ -20,7 +20,10 @@ const secret = '90210';
 //Configures middlewares for the Express app, including CORS, JSON parser,
 //cookie parser, and static file server
 
-app.use(cors({credentials:true,origin:'http://localhost:3000'}));
+app.use(cors({
+  credentials: true,
+  origin: 'http://ec2-52-15-155-181.us-east-2.compute.amazonaws.com'  // Use your actual frontend URL here
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
@@ -82,31 +85,6 @@ app.post('/logout', (req,res) => {
 
 //Sets up POST endpoint for creating posts with file uploads
 //Processes and renames the file, verifies user's token, creates new post in the database
-app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
-  const {originalname,path} = req.file;
-  const parts = originalname.split('.');
-  const ext = parts[parts.length - 1];
-  const newPath = path+'.'+ext;
-  fs.renameSync(path, newPath);
-
-  const {token} = req.cookies;
-  jwt.verify(token, secret, {}, async (err,info) => {
-    if (err) throw err;
-    const {title,summary,content} = req.body;
-    const postDoc = await Post.create({
-      title,
-      summary,
-      content,
-      cover:newPath,
-      author:info.id,
-    });
-    res.json(postDoc);
-  });
-
-});
-
-//Endpoints for fetching posts
-//First GET fetches list of posts, second GET fetches post by ID
 app.put('/post',uploadMiddleware.single('file'), async (req,res) => {
   let newPath = null;
   if (req.file) {
@@ -137,6 +115,33 @@ app.put('/post',uploadMiddleware.single('file'), async (req,res) => {
   });
 
 });
+
+//Endpoints for fetching posts
+//First GET fetches list of posts, second GET fetches post by ID
+app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1];  // Extract the token
+
+  if (!token) {
+    return res.status(401).json({ message: 'JWT token is missing' });
+  }
+
+  jwt.verify(token, secret, {}, async (err,info) => {
+    if (err) return res.status(403).json({ message: 'Invalid token' });
+    
+    // Proceed with the rest of your logic
+    const {title,summary,content} = req.body;
+    const postDoc = await Post.create({
+      title,
+      summary,
+      content,
+      cover:newPath,
+      author:info.id,
+    });
+    res.json(postDoc);
+  });
+});
+
 
 app.get('/post', async (req,res) => {
   res.json(
