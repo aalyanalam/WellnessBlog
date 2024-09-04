@@ -14,7 +14,7 @@ const uploadMiddleware = multer({ dest: 'uploads/' });
 const fs = require('fs');
 
 const salt = bcrypt.genSaltSync(10);
-const secret = '90210';
+const secret = 'YOUR_SECRET';
 
 //Middleware Configuration
 //Configures middlewares for the Express app, including CORS, JSON parser,
@@ -22,7 +22,7 @@ const secret = '90210';
 
 app.use(cors({
   credentials: true,
-  origin: 'http://ec2-52-15-155-181.us-east-2.compute.amazonaws.com'  // Use your actual frontend URL here
+  origin: 'IPV4 DNS'  // Use your actual frontend URL here
 }));
 app.use(express.json());
 app.use(cookieParser());
@@ -30,7 +30,7 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 
 console.log("Connecting to MongoDB...");
 //Database Connection
-mongoose.connect('mongodb+srv://blog:z9RnZIyjoSf8TVRz@cluster0.81jzigh.mongodb.net/wellnessblog?retryWrites=true&w=majority')
+mongoose.connect('YOUR_MONGODB_URL')
 
 //POST endpoint for user registration: takes username and password,
 //hashes the password, creates new user in database, and returns user object
