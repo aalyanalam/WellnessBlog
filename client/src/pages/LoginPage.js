@@ -9,7 +9,7 @@ export default function LoginPage () {
     const {setUserInfo} = useContext(UserContext);
     async function login(ev) {
         ev.preventDefault();
-        const response = await fetch('http://ec2-52-15-155-181.us-east-2.compute.amazonaws.com:4000/login', {
+        const response = await fetch('IPV4_DNS/login', {
             method: 'POST',
             body: JSON.stringify({username,password}),
             headers: {'Content-Type':'application/json'},
