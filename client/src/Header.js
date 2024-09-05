@@ -5,7 +5,7 @@ import {UserContext} from "./UserContext";
 export default function Header() {
     const {setUserInfo,userInfo} = useContext(UserContext);
     useEffect(() => {
-        fetch('http://ec2-52-15-155-181.us-east-2.compute.amazonaws.com:4000/profile', {
+        fetch('IPV4_DNS/profile', {
             credentials: 'include',
         }).then(response => {
             response.json().then(userInfo => {
@@ -15,7 +15,7 @@ export default function Header() {
     }, []);
     
     function logout() {
-        fetch('http://ec2-52-15-155-181.us-east-2.compute.amazonaws.com:4000/logout', {
+        fetch('IPV4_DNS/logout', {
             credentials: 'include',
             method: 'POST',
         });
